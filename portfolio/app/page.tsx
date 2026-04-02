@@ -1,4 +1,4 @@
-import PersonalityGameContainer from "./Component/PassionGameContainer";
+import PersonalityGameContainer from "./PassionGameContainer";
 import HomeContainer from "./Homecontainer";
 import ProjectContainer from "./ProjectContainer";
 
