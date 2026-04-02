@@ -35,7 +35,7 @@ export default function HomeContainer() {
             Portfolio
           </TextComponent>
           <TextComponent textType="p" className={styles.hero_subtitle}>
-            Hello I'm Anaël Toula a full stack developer
+            Hello I&apos;m Anaël Toula a full stack developer
           </TextComponent>
           
           <div className={styles.hero_buttons}>
