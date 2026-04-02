@@ -7,7 +7,7 @@ $breakpoint-xl: 1280px;
 
 // Fonction px -> rem
 @function px-to-rem($px, $base: 16) {
-  @return ($px / $base) * 1rem;
+  @return math.div($px, $base) * 1rem;
 }
 
 // Exemple d’utilisation
