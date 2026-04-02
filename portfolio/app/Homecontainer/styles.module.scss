@@ -1,0 +1,127 @@
+@import "../styles.scss";
+
+.hero {
+  min-height: 100vh;
+  padding: #{px-to-rem(64)} #{px-to-rem(32)};
+  display: flex;
+  align-items: center;
+
+  &_content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: #{px-to-rem(64)};
+    max-width: #{px-to-rem(1400)};
+    margin: 0 auto;
+
+    @media (max-width: $breakpoint-md) {
+      grid-template-columns: 1fr;
+      gap: #{px-to-rem(48)};
+    }
+  }
+
+  &_image {
+    max-width: 100%;
+    height: auto;
+    border-radius: #{px-to-rem(16)};
+     @media (max-width: $breakpoint-md) {
+    display: none;
+  }
+  }
+
+  &_text {
+    display: flex;
+    flex-direction: column;
+    gap: #{px-to-rem(24)};
+    justify-content: center;
+  }
+
+  &_title {
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #000000 0%, #f0f0f0 100%);
+    background-clip: text;
+    -webkit-background-clip: text;  // 👈 Ordre corrigé
+    -webkit-text-fill-color: transparent;
+
+    font-size: #{px-to-rem(48)};
+    @media (min-width: $breakpoint-md) { font-size: #{px-to-rem(64)}; }
+    @media (min-width: $breakpoint-lg) { font-size: #{px-to-rem(72)}; }
+    @media (min-width: $breakpoint-xl) { font-size: #{px-to-rem(88)}; }
+  }
+
+  &_subtitle {
+    font-weight: 400;
+    color: #666;
+    line-height: 1.5;
+    max-width: #{px-to-rem(500)};
+
+    font-size: #{px-to-rem(18)};
+    @media (min-width: $breakpoint-md) { font-size: #{px-to-rem(20)}; }
+    @media (min-width: $breakpoint-lg) { font-size: #{px-to-rem(22)}; }
+  }
+
+  // 👈 BOUTONS VERTICAUX PARTOUT
+  &_buttons {
+    display: flex;
+    flex-direction: column;  // 👈 L'un au-dessus de l'autre
+    gap: #{px-to-rem(12)};   // Gap vertical
+    margin-top: #{px-to-rem(16)};
+    align-items: flex-start; // Aligné gauche desktop
+    width: 100%;             // Prend toute largeur
+
+    @media (max-width: $breakpoint-md) {
+      align-items: center;   // Centré mobile
+      gap: #{px-to-rem(10)};
+    }
+  }
+
+  &_cta {
+    background: linear-gradient(135deg, #a3a3a3 0%, #000000 100%);
+    color: white;
+    border: none;
+    padding: #{px-to-rem(14)} #{px-to-rem(32)};
+    font-size: #{px-to-rem(15)};
+    font-weight: 600;
+    border-radius: #{px-to-rem(10)};
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 #{px-to-rem(8)} #{px-to-rem(24)} rgba(102, 126, 234, 0.3);
+    width: 100%;  // 👈 Pleine largeur vertical
+    white-space: nowrap;
+
+    &:hover {
+      transform: translateY(#{px-to-rem(-2)});
+      box-shadow: 0 #{px-to-rem(12)} #{px-to-rem(32)} rgba(102, 126, 234, 0.4);
+    }
+  }
+
+  &_cta_secondary {
+    @extend .hero_cta;
+    background: transparent;
+    color: #242424;
+    border: 2px solid #b0b0b0;
+    box-shadow: none;
+
+    &:hover {
+      background: #b3b3b3;
+      color: rgb(80, 80, 80);
+    }
+  }
+
+  &_instagram {
+    margin-top: #{px-to-rem(32)};
+    display: inline-flex;
+    align-items: center;
+    gap: #{px-to-rem(8)};
+    color: #818181;
+    font-size: #{px-to-rem(16)};
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+
+    img {  // 👈 Pour ton Image Insta
+      width: #{px-to-rem(24)};
+      height: #{px-to-rem(24)};
+    }
+  }
+}

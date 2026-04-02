@@ -1,0 +1,443 @@
+@import "../styles.scss";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section
+// ─────────────────────────────────────────────────────────────────────────────
+
+.project_container {
+  background: #080808;
+  min-height: 100vh;
+  padding: #{px-to-rem(64)} #{px-to-rem(40)} #{px-to-rem(80)};
+
+  @media (min-width: $breakpoint-md) {
+    padding: #{px-to-rem(80)} #{px-to-rem(64)} #{px-to-rem(100)};
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Header
+// ─────────────────────────────────────────────────────────────────────────────
+
+.project_header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: #{px-to-rem(72)};
+  color:#fff;
+
+  &_left {
+    display: flex;
+    flex-direction: column;
+    gap: #{px-to-rem(6)};
+  }
+
+  &_eyebrow {
+    font-size: #{px-to-rem(10)};
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  &_title {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-size: #{px-to-rem(48)};
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+
+    @media (min-width: $breakpoint-md) {
+      font-size: #{px-to-rem(64)};
+    }
+  }
+
+  &_right {
+    display: flex;
+    align-items: center;
+    gap: #{px-to-rem(20)};
+    padding-top: #{px-to-rem(8)};
+  }
+
+  &_total {
+    font-size: #{px-to-rem(12)};
+    color: rgba(255, 255, 255, 0.25);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Nav boutons (mobile)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.project_nav {
+  display: flex;
+  gap: #{px-to-rem(8)};
+
+  @media (min-width: $breakpoint-md) {
+    display: none;
+  }
+}
+
+.nav_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: #{px-to-rem(36)};
+  height: #{px-to-rem(36)};
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: #{px-to-rem(16)};
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Track
+// ─────────────────────────────────────────────────────────────────────────────
+
+.project_track {
+  display: flex;
+  gap: #{px-to-rem(16)};
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  @media (min-width: $breakpoint-md) {
+    flex-direction: column;
+    overflow-x: visible;
+    gap: 0;
+    cursor: default;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Cards
+// ─────────────────────────────────────────────────────────────────────────────
+
+.project_card {
+  // Mobile
+  position: relative;
+  flex-shrink: 0;
+  width: 80vw;
+  max-width: #{px-to-rem(340)};
+  height: #{px-to-rem(460)};
+  border-radius: #{px-to-rem(4)};
+  overflow: hidden;
+  scroll-snap-align: start;
+  cursor: pointer;
+
+  // Desktop : ligne horizontale
+  @media (min-width: $breakpoint-md) {
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    overflow: visible;
+    display: grid;
+    grid-template-columns: #{px-to-rem(56)} 1fr #{px-to-rem(32)};
+    align-items: center;
+    padding: #{px-to-rem(28)} 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    gap: #{px-to-rem(32)};
+    transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:first-child {
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    &:hover {
+      padding-left: #{px-to-rem(12)};
+
+      .card_index {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .card_title {
+        color: #fff;
+        letter-spacing: -0.025em;
+      }
+
+      .card_arrow {
+        transform: translate(#{px-to-rem(4)}, #{px-to-rem(-4)});
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Media (mobile)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.card_media {
+  position: absolute;
+  inset: 0;
+
+  @media (min-width: $breakpoint-md) {
+    display: none;
+  }
+}
+
+.card_image {
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.card_video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card_overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 8, 8, 0.1) 0%,
+    rgba(8, 8, 8, 0.6) 55%,
+    rgba(8, 8, 8, 0.95) 100%
+  );
+
+  @media (min-width: $breakpoint-md) {
+    display: none;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Meta haut
+// ─────────────────────────────────────────────────────────────────────────────
+
+.card_meta_top {
+  position: absolute;
+  top: #{px-to-rem(20)};
+  left: #{px-to-rem(20)};
+  right: #{px-to-rem(20)};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 2;
+
+  @media (min-width: $breakpoint-md) {
+    position: static;
+    justify-content: flex-start;
+  }
+}
+
+.card_index {
+  font-size: #{px-to-rem(11)};
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.06em;
+  transition: color 0.3s ease;
+}
+
+.card_tag {
+  font-size: #{px-to-rem(10)};
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: #{px-to-rem(4)} #{px-to-rem(10)};
+  border-radius: #{px-to-rem(20)};
+  backdrop-filter: blur(8px);
+
+  @media (min-width: $breakpoint-md) {
+    display: none;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Contenu
+// ─────────────────────────────────────────────────────────────────────────────
+
+.card_content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: #{px-to-rem(24)};
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: #{px-to-rem(6)};
+
+  @media (min-width: $breakpoint-md) {
+    position: static;
+    padding: 0;
+    gap: #{px-to-rem(6)};
+  }
+}
+
+.card_title {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: #{px-to-rem(26)};
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  transition: color 0.3s ease, letter-spacing 0.4s ease;
+  margin: 0;
+
+  @media (min-width: $breakpoint-md) {
+    font-size: #{px-to-rem(44)};
+  }
+
+  @media (min-width: $breakpoint-lg) {
+    font-size: #{px-to-rem(58)};
+  }
+}
+
+.card_desc {
+  font-size: #{px-to-rem(12)};
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1.55;
+  margin: 0 0 #{px-to-rem(20)} 0;
+
+  @media (min-width: $breakpoint-md) {
+    font-size: #{px-to-rem(13)};
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Lien mobile
+// ─────────────────────────────────────────────────────────────────────────────
+
+.card_link {
+  display: inline-flex;
+  align-items: center;
+  gap: #{px-to-rem(6)};
+  margin-top: #{px-to-rem(10)};
+  font-size: #{px-to-rem(10)};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: #{px-to-rem(2)};
+  width: fit-content;
+  transition: color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  @media (min-width: $breakpoint-md) {
+    display: none;
+  }
+
+  &_arrow {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover &_arrow {
+    transform: translateX(#{px-to-rem(4)});
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Flèche desktop
+// ─────────────────────────────────────────────────────────────────────────────
+
+.card_arrow {
+  display: none;
+
+  @media (min-width: $breakpoint-md) {
+    display: block;
+    font-size: #{px-to-rem(18)};
+    color: rgba(255, 255, 255, 0.2);
+    justify-self: end;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dots (mobile)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.project_dots {
+  display: flex;
+  justify-content: center;
+  gap: #{px-to-rem(8)};
+  margin-top: #{px-to-rem(32)};
+
+  @media (min-width: $breakpoint-md) {
+    display: none;
+  }
+}
+
+.dot {
+  width: #{px-to-rem(5)};
+  height: #{px-to-rem(5)};
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.dot_active {
+  background: rgba(255, 255, 255, 0.75);
+  width: #{px-to-rem(18)};
+  border-radius: #{px-to-rem(3)};
+}
+
+.project_preview {
+  display: none;
+
+  @media (min-width: $breakpoint-md) {
+    display: block;
+    position: fixed;
+    width: #{px-to-rem(280)};
+    height: #{px-to-rem(360)};
+    pointer-events: none;
+    z-index: 50;
+    overflow: hidden;
+    border-radius: #{px-to-rem(6)};
+    opacity: 0;
+    transform: translate3d(0, #{px-to-rem(12)}, 0) scale(0.96);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    background: #111;
+    box-shadow: 0 #{px-to-rem(24)} #{px-to-rem(60)} rgba(0, 0, 0, 0.35);
+  }
+
+  &_visible {
+    @media (min-width: $breakpoint-md) {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+
+  &_media {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+}
