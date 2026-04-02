@@ -34,8 +34,11 @@ export default function HomeContainer() {
           <TextComponent textType="h1" className={styles.hero_title}>
             Portfolio
           </TextComponent>
-          <TextComponent textType="p" className={styles.hero_subtitle}>
-            Hello I&apos;m Anaël Toula a full stack developer
+          <TextComponent
+            textType="p"
+            className={styles.hero_subtitle}
+          >
+            {"Hello I'm Anaël Toula, a full stack developer"}
           </TextComponent>
           
           <div className={styles.hero_buttons}>

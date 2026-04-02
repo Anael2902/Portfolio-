@@ -457,7 +457,7 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({
 
             <div className={styles.result_actions}>
               <button className={styles.result_retry} onClick={() => setStep("choose")}>
-                ← Changer d&apos;univers
+                {"← Changer d'univers"}
               </button>
               <button className={styles.result_reset} onClick={reset}>
                 Recommencer
