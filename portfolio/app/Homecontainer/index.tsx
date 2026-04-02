@@ -21,7 +21,7 @@ export default function HomeContainer() {
     <section className={styles.hero}>
       <div className={styles.hero_content}>
         <Image 
-          src="/images/car.png"
+          src="/images/voiture.PNG"
           alt="Anaël Toula"
           width={450}
           height={600}
