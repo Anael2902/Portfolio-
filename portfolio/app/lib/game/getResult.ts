@@ -187,7 +187,7 @@ async function getCinemaResult(astroSign: string, seed: number): Promise<ResultD
       subtitle: item.release_date?.split("-")[0] ?? "Année inconnue",
       phrase: getPhrase("cinema", seed),
     };
-  } catch (e) {
+  } catch {
     return {
       name: fallback.title,
       image: fallback.image,

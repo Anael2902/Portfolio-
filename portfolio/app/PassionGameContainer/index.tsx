@@ -4,7 +4,7 @@ import React, { useState, useCallback } from "react";
 import { getAstroSign, computeSeed } from "../lib/game/utils";
 import { fetchCategoryResult } from "../actions/getResult";
 import type { Category, ResultData, AstroResult } from "../lib/game/types";
-import { CATEGORIES, ASTRO_SIGNS } from "../lib/game/constants";
+import { CATEGORIES } from "../lib/game/constants";
 import styles from "./styles.module.scss";
 
 interface PersonalityGameProps {
@@ -247,7 +247,7 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
 
             <div className={styles.result_actions}>
               <button className={styles.retry_btn} onClick={() => setStep("choose")}>
-                Changer d'univers
+                Changer d&apos;univers
               </button>
               <button className={styles.reset_btn} onClick={reset}>
                 Recommencer
