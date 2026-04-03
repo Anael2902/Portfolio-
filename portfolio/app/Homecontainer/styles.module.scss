@@ -5,6 +5,7 @@
   padding: #{px-to-rem(64)} #{px-to-rem(32)};
   display: flex;
   align-items: center;
+  background: #ffffff;
 
   &_content {
     display: grid;
@@ -38,7 +39,7 @@
   &_title {
     font-weight: 900;
     line-height: 1.1;
-    background: linear-gradient(135deg, #000000 0%, #f0f0f0 100%);
+    background: linear-gradient(135deg, #000000 0%, #7b7b7b 100%);
     background-clip: text;
     -webkit-background-clip: text;  // 👈 Ordre corrigé
     -webkit-text-fill-color: transparent;

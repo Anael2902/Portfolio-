@@ -1,4 +1,5 @@
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
 
 export interface TmdbMovie {
   id: number;
@@ -40,9 +41,12 @@ function getTmdbToken() {
   return token;
 }
 
-export function getTmdbPosterUrl(path?: string | null, size: "w342" | "w500" | "original" = "w500") {
+export function getTmdbPosterUrl(
+  path?: string | null,
+  size: "w342" | "w500" | "original" = "w500"
+) {
   if (!path) return "";
-  return `https://image.tmdb.org/t/p/${size}${path}`;
+  return `${TMDB_IMAGE_BASE_URL}/${size}${path}`;
 }
 
 export async function fetchTmdbMovies({
@@ -62,14 +66,17 @@ export async function fetchTmdbMovies({
     "vote_count.gte": String(minVoteCount),
   });
 
-  const res = await fetch(`${TMDB_BASE_URL}/discover/movie?${searchParams.toString()}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${TMDB_BASE_URL}/discover/movie?${searchParams.toString()}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
 
   if (!res.ok) {
     throw new Error(`Erreur TMDB (${res.status})`);
