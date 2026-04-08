@@ -11,16 +11,22 @@ interface PersonalityGameProps {
   id?: string;
 }
 
+const MULTIVERSE_CATEGORIES: Category[] = ["music", "cinema", "manga", "football"];
+
 const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
   const [firstName, setFirstName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [selectedCat, setSelectedCat] = useState<Category | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<ResultData | null>(null);
+  const [results, setResults] = useState<ResultData[]>([]);
   const [astro, setAstro] = useState<AstroResult | null>(null);
   const [seed, setSeed] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"form" | "choose" | "result">("form");
+
+  const dominantLetter = firstName.trim()[0]?.toUpperCase() ?? "";
+  const isMultiResult = results.length > 0;
 
   const handleFormSubmit = () => {
     if (!firstName.trim() || !birthDate) return;
@@ -33,25 +39,75 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
     setAstro(computedAstro);
     setStep("choose");
     setResult(null);
+    setResults([]);
     setError(null);
   };
 
-  const handlePlay = useCallback(async (cat: Category) => {
+  const handlePlay = useCallback(
+    async (cat: Category) => {
+      if (!astro) return;
+
+      setSelectedCat(cat);
+      setIsSpinning(true);
+      setError(null);
+      setResult(null);
+      setResults([]);
+
+      try {
+        const res = await fetchCategoryResult({
+          category: cat,
+          astroSign: astro.sign,
+          seed,
+        });
+
+        setResult(res);
+        setStep("result");
+      } catch (e) {
+        setError(
+          e instanceof Error
+            ? e.message
+            : "Une erreur est survenue. Réessaie !"
+        );
+      } finally {
+        setIsSpinning(false);
+      }
+    },
+    [astro, seed]
+  );
+
+  const handleRoulette = async () => {
     if (!astro) return;
 
-    setSelectedCat(cat);
     setIsSpinning(true);
     setError(null);
     setResult(null);
+    setResults([]);
+
+    const rouletteOrder: Category[] = [
+      ...MULTIVERSE_CATEGORIES,
+      ...MULTIVERSE_CATEGORIES,
+      ...MULTIVERSE_CATEGORIES,
+    ];
+
+    for (let i = 0; i < rouletteOrder.length; i++) {
+      setSelectedCat(rouletteOrder[i]);
+      await new Promise((r) => setTimeout(r, 180 + i * 60));
+    }
+
+    await new Promise((r) => setTimeout(r, 400));
 
     try {
-      const res = await fetchCategoryResult({
-        category: cat,
-        astroSign: astro.sign,
-        seed,
-      });
+      const allResults = await Promise.all(
+        MULTIVERSE_CATEGORIES.map((category) =>
+          fetchCategoryResult({
+            category,
+            astroSign: astro.sign,
+            seed,
+          })
+        )
+      );
 
-      setResult(res);
+      setResults(allResults);
       setStep("result");
     } catch (e) {
       setError(
@@ -62,39 +118,23 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
     } finally {
       setIsSpinning(false);
     }
-  }, [astro, seed]);
-
-  const handleRoulette = async () => {
-    setIsSpinning(true);
-    setError(null);
-    setResult(null);
-
-    const cats: Category[] = ["music", "cinema", "manga"];
-    const rouletteOrder: Category[] = [...cats, ...cats, ...cats];
-
-    for (let i = 0; i < rouletteOrder.length; i++) {
-      setSelectedCat(rouletteOrder[i]);
-      await new Promise((r) => setTimeout(r, 180 + i * 60));
-    }
-
-    const finalCat = cats[seed % cats.length];
-    setSelectedCat(finalCat);
-    await new Promise((r) => setTimeout(r, 400));
-
-    await handlePlay(finalCat);
   };
 
   const reset = () => {
     setStep("form");
     setResult(null);
+    setResults([]);
     setAstro(null);
     setSelectedCat(null);
     setError(null);
     setFirstName("");
     setBirthDate("");
+    setSeed(0);
   };
 
-  const catInfo = result && CATEGORIES.find((c) => c.id === result.category);
+  const singleCatInfo = result
+    ? CATEGORIES.find((c) => c.id === result.category)
+    : null;
 
   return (
     <section id={id} className={styles.game_section}>
@@ -107,7 +147,6 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
       </div>
 
       <div className={styles.game_body}>
-        {/* STEP 1 : Formulaire */}
         {step === "form" && (
           <div className={styles.form_card}>
             <div className={styles.form_fields}>
@@ -122,6 +161,7 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
                   className={styles.field_input}
                 />
               </div>
+
               <div className={styles.field}>
                 <label className={styles.field_label}>Ta date de naissance</label>
                 <input
@@ -132,25 +172,27 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
                 />
               </div>
             </div>
+
             <button
               className={styles.submit_btn}
               onClick={handleFormSubmit}
               disabled={!firstName.trim() || !birthDate}
             >
-              Continuer 
+              Continuer
             </button>
           </div>
         )}
 
-        {/* STEP 2 : Choix catégorie */}
         {step === "choose" && astro && (
           <div className={styles.choose_wrapper}>
             <div className={styles.astro_badge}>
               <span className={styles.astro_emoji}>{astro.emoji}</span>
               <div className={styles.astro_info}>
-                <span>{astro.sign} · {astro.element}</span>
                 <span>
-                  Lettre dominante : <strong>{firstName.trim()[0].toUpperCase()}</strong>
+                  {astro.sign} · {astro.element}
+                </span>
+                <span>
+                  Lettre dominante : <strong>{dominantLetter}</strong>
                 </span>
               </div>
             </div>
@@ -196,8 +238,74 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
           </div>
         )}
 
-        {/* STEP 3 : Résultat */}
-        {step === "result" && result && catInfo && (
+        {step === "result" && isMultiResult && (
+          <div className={styles.result_wrapper}>
+            <div className={styles.multi_result_grid}>
+              {results.map((item) => {
+                const catInfo = CATEGORIES.find((c) => c.id === item.category);
+
+                if (!catInfo) return null;
+
+                return (
+                  <div key={item.category} className={styles.result_card}>
+                    <div className={styles.result_image_wrap}>
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className={styles.result_image}
+                        />
+                      ) : (
+                        <div className={styles.result_image_placeholder}>
+                          <span>{catInfo.emoji}</span>
+                        </div>
+                      )}
+
+                      <div
+                        className={styles.result_cat_badge}
+                        style={{ "--cat-color": catInfo.color } as React.CSSProperties}
+                      >
+                        {catInfo.emoji} {catInfo.label}
+                      </div>
+                    </div>
+
+                    <div className={styles.result_content}>
+                      <div className={styles.result_meta}>
+                        <span>
+                          {astro?.emoji} {astro?.sign}
+                        </span>
+                        <span>·</span>
+                        <span>{dominantLetter} comme lettre</span>
+                      </div>
+
+                      <p className={styles.result_phrase}>{item.phrase}</p>
+                      <h3 className={styles.result_name}>{item.name}</h3>
+                      <p className={styles.result_subtitle}>{item.subtitle}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className={styles.result_actions}>
+              <button
+                className={styles.retry_btn}
+                onClick={() => {
+                  setStep("choose");
+                  setResult(null);
+                  setResults([]);
+                }}
+              >
+                Changer d&apos;univers
+              </button>
+              <button className={styles.reset_btn} onClick={reset}>
+                Recommencer
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === "result" && result && singleCatInfo && !isMultiResult && (
           <div className={styles.result_wrapper}>
             <div className={styles.result_card}>
               <div className={styles.result_image_wrap}>
@@ -209,14 +317,15 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
                   />
                 ) : (
                   <div className={styles.result_image_placeholder}>
-                    <span>{catInfo.emoji}</span>
+                    <span>{singleCatInfo.emoji}</span>
                   </div>
                 )}
+
                 <div
                   className={styles.result_cat_badge}
-                  style={{ "--cat-color": catInfo.color } as React.CSSProperties}
+                  style={{ "--cat-color": singleCatInfo.color } as React.CSSProperties}
                 >
-                  {catInfo.emoji} {catInfo.label}
+                  {singleCatInfo.emoji} {singleCatInfo.label}
                 </div>
               </div>
 
@@ -227,9 +336,7 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
                       {astro.emoji} {astro.sign}
                     </span>
                     <span>·</span>
-                    <span>
-                      {firstName.trim()[0].toUpperCase()} comme lettre
-                    </span>
+                    <span>{dominantLetter} comme lettre</span>
                     <span>·</span>
                     <span>seed #{seed}</span>
                   </div>
@@ -246,7 +353,10 @@ const PersonalityGameContainer: React.FC<PersonalityGameProps> = ({ id }) => {
             </div>
 
             <div className={styles.result_actions}>
-              <button className={styles.retry_btn} onClick={() => setStep("choose")}>
+              <button
+                className={styles.retry_btn}
+                onClick={() => setStep("choose")}
+              >
                 Changer d&apos;univers
               </button>
               <button className={styles.reset_btn} onClick={reset}>

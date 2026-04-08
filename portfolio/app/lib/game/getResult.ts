@@ -1,10 +1,17 @@
 import { fetchJikanMangaList, getBestJikanImage } from "../api/jikan";
-import {fetchTmdbMovies,getTmdbPosterUrl,type TmdbMovie} from "../api/tmdb";
-import {getArtistTopTracks} from "../api/lastfm";
+import {
+  fetchTmdbMovies,
+  getTmdbPosterUrl,
+  type TmdbMovie,
+} from "../api/tmdb";
+import { getArtistTopTracks } from "../api/lastfm";
+import {
+  searchDeezerArtist,
+  getBestDeezerArtistImage,
+} from "../api/deezer";
+import { fetchFootballSquad } from "../api/sportsF";
 
-import { searchDeezerArtist, getBestDeezerArtistImage } from "../api/deezer";
-
-export type Category = "music" | "cinema" | "manga";
+export type Category = "music" | "cinema" | "manga" | "football";
 
 export interface ResultData {
   name: string;
@@ -30,6 +37,11 @@ const PHRASES: Record<Category, string[]> = {
     "L'univers qui te représente, c'est",
     "Si tu étais un personnage, tu serais dans",
   ],
+  football: [
+    "Ton énergie sur le terrain ressemble à",
+    "Si tu étais un joueur ou une joueuse, tu serais",
+    "Ton aura footballistique correspond à",
+  ],
 };
 
 const ASTRO_GENRE_MAP: Record<
@@ -49,6 +61,8 @@ const ASTRO_GENRE_MAP: Record<
   Verseau: { manga: "sci-fi", cinema: "878", music: "Electronic" },
   Poissons: { manga: "drama", cinema: "18", music: "Soul" },
 };
+
+
 
 const JIKAN_MANGA_GENRE_IDS: Record<string, string> = {
   action: "1",
@@ -79,6 +93,143 @@ const MUSIC_ARTISTS_BY_STYLE: Record<string, string[]> = {
   ],
 };
 
+interface FootballSquadPlayer {
+  id: number;
+  name?: string;
+  age?: number;
+  number?: number | null;
+  position?: string;
+  photo?: string;
+}
+
+interface FootballSquadTeam {
+  id: number;
+  name?: string;
+  logo?: string;
+}
+
+interface FootballSquadResponseItem {
+  team?: FootballSquadTeam;
+  players?: FootballSquadPlayer[];
+}
+
+const FEATURED_FOOTBALL_TEAMS = [
+  33,  // Manchester United
+  40,  // Liverpool
+  50,  // Manchester City
+  42,  // Arsenal
+  49,  // Chelsea
+
+  529, // Barcelona
+  541, // Real Madrid
+  530, // Atletico Madrid
+  536, // Sevilla
+  548, // Real Sociedad
+
+  489, // AC Milan
+  496, // Juventus
+  505, // Inter
+  497, // Roma
+  492, // Napoli
+
+  157, // Bayern
+  165, // Dortmund
+  173, // RB Leipzig
+  168, // Leverkusen
+  182, // Wolfsburg
+
+  85,  // PSG
+  81,  // Marseille
+  91,  // Monaco
+  80,  // Lyon
+  84,  // Nice
+];
+
+const ASTRO_FOOTBALL_TEAMS: Record<string, number[]> = {
+  Bélier: [50, 541, 157, 85],
+  Taureau: [40, 529, 489, 91],
+  Gémeaux: [42, 505, 173, 81],
+  Cancer: [49, 496, 85, 84],
+  Lion: [33, 530, 157, 80],
+  Vierge: [165, 492, 548, 91],
+  Balance: [173, 497, 529, 84],
+  Scorpion: [168, 536, 496, 81],
+  Sagittaire: [541, 50, 492, 85],
+  Capricorne: [489, 40, 157, 80],
+  Verseau: [505, 42, 530, 91],
+  Poissons: [496, 49, 81, 84],
+};
+
+function pickFootballPlayerWithPhoto(
+  players: FootballSquadPlayer[],
+  seed: number
+): FootballSquadPlayer | null {
+  const validPlayers = players.filter(
+    (player) => Boolean(player?.name) && Boolean(player?.photo)
+  );
+
+  if (validPlayers.length > 0) {
+    return seededPick(validPlayers, seed);
+  }
+
+  return players.length > 0 ? seededPick(players, seed) : null;
+}
+
+async function getFootballResult(
+  astroSign: string,
+  seed: number
+): Promise<ResultData> {
+  const preferredTeams =
+    ASTRO_FOOTBALL_TEAMS[astroSign] ?? FEATURED_FOOTBALL_TEAMS;
+
+  const fallback = {
+    name: "Joueur mystère",
+    image: "",
+    subtitle: "Club inconnu",
+  };
+
+  try {
+    for (let i = 0; i < preferredTeams.length; i++) {
+      const teamId = preferredTeams[(Math.abs(seed) + i) % preferredTeams.length];
+      const squad = (await fetchFootballSquad(teamId)) as FootballSquadResponseItem | null;
+
+      if (!squad) continue;
+
+      const players = squad.players ?? [];
+      const pickedPlayer = pickFootballPlayerWithPhoto(players, seed + i);
+
+      if (!pickedPlayer) continue;
+
+      const clubName = squad.team?.name ?? "Club inconnu";
+      const position = pickedPlayer.position?.trim() ?? "";
+
+      return {
+        name: pickedPlayer.name ?? fallback.name,
+        image: pickedPlayer.photo ?? fallback.image,
+        category: "football",
+        subtitle: position ? `${clubName} · ${position}` : clubName,
+        phrase: getPhrase("football", seed),
+      };
+    }
+
+    return {
+      name: fallback.name,
+      image: fallback.image,
+      category: "football",
+      subtitle: fallback.subtitle,
+      phrase: getPhrase("football", seed),
+    };
+  } catch {
+    return {
+      name: fallback.name,
+      image: fallback.image,
+      category: "football",
+      subtitle: fallback.subtitle,
+      phrase: getPhrase("football", seed),
+    };
+  }
+}
+
 function seededPick<T>(arr: T[], seed: number): T {
   return arr[seed % arr.length];
 }
@@ -94,6 +245,7 @@ function pickMovieWithPoster(movies: TmdbMovie[], seed: number): TmdbMovie | nul
   }
   return movies.length > 0 ? seededPick(movies, seed) : null;
 }
+
 
 
 async function getMangaResult(astroSign: string, seed: number): Promise<ResultData> {
@@ -159,7 +311,7 @@ async function getCinemaResult(astroSign: string, seed: number): Promise<ResultD
   };
 
   try {
-     console.log("[TMDB] genreId:", genreId, "page:", page);
+    console.log("[TMDB] genreId:", genreId, "page:", page);
     const movies = await fetchTmdbMovies({
       genreId,
       page,
@@ -205,8 +357,8 @@ async function getMusicResult(astroSign: string, seed: number): Promise<ResultDa
 
   try {
     const [deezerArtist, topTracks] = await Promise.all([
-      searchDeezerArtist(pickedArtist),  // ← Deezer pour l'image
-      getArtistTopTracks(pickedArtist),  // ← Last.fm pour les tracks
+      searchDeezerArtist(pickedArtist),
+      getArtistTopTracks(pickedArtist),
     ]);
 
     const track = topTracks.length ? seededPick(topTracks, seed) : null;
@@ -230,6 +382,7 @@ async function getMusicResult(astroSign: string, seed: number): Promise<ResultDa
   }
 }
 
+
 export async function getCategoryResult(params: {
   category: Category;
   astroSign: string;
@@ -242,6 +395,8 @@ export async function getCategoryResult(params: {
       return getMangaResult(astroSign, seed);
     case "cinema":
       return getCinemaResult(astroSign, seed);
+    case "football":
+      return getFootballResult(astroSign, seed);
     case "music":
     default:
       return getMusicResult(astroSign, seed);

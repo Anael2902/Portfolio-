@@ -1,4 +1,4 @@
-export type Category = "music" | "cinema" | "manga";
+export type Category = "music" | "cinema" | "manga" | "football";
 
 export interface ResultData {
   name: string;

@@ -490,3 +490,13 @@
     transform: translateY(0);
   }
 }
+
+.multi_result_grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: px-to-rem(16);
+
+  @media (min-width: $breakpoint-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

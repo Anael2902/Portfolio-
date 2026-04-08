@@ -4,6 +4,7 @@ export const CATEGORIES: readonly CategoryOption[] = [
   { id: "music", label: "Musique", emoji: "🎵", color: "#7c3aed" },
   { id: "cinema", label: "Cinéma", emoji: "🎬", color: "#dc2626" },
   { id: "manga", label: "Manga", emoji: "✦", color: "#ea580c" },
+  { id: "football", label: "Football", emoji: "⚽", color: "#16a34a" },
 ] as const;
 
 export const PHRASES: Record<Category, readonly string[]> = {
@@ -22,7 +23,12 @@ export const PHRASES: Record<Category, readonly string[]> = {
     "L'univers qui te représente, c'est",
     "Si tu étais un personnage, tu serais dans",
   ],
-};
+  football: [
+    "Ton énergie sur le terrain ressemble à",
+    "Si tu étais un joueur ou une joueuse, tu serais",
+    "Ton aura footballistique correspond à",
+  ],
+} as const;
 
 export const ASTRO_SIGNS: readonly AstroSignDefinition[] = [
   { sign: "Bélier", emoji: "♈", element: "Feu", start: [3, 21], end: [4, 19] },
