@@ -38,12 +38,12 @@ export default function HomeContainer() {
             textType="p"
             className={styles.hero_subtitle}
           >
-            {"Hello I'm Anaël Toula, a full stack developer"}
+            {"Bonjour je suis Anaël, un développeur full-stack"}
           </TextComponent>
           
           <div className={styles.hero_buttons}>
             <button className={styles.hero_cta_secondary} onClick={handleEmail}>
-              Contact Me ✉
+              Contactez moi ✉
             </button>
             <button className={styles.hero_cta} onClick={scrollToProjects}>
               Voir mes projets 
